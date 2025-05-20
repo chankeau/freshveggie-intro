@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蔬鲜递 - 智慧生鲜购物平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary-color: #FF9800;
+            --secondary-dark: #F57C00;
+            --text-dark: #212121;
+            --text-light: #5f6368;
+            --bg-light: #f8f9fa;
+            --bg-highlight: #e8f5e9;
+            --border-color: #dce7d8;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+            --card-hover-shadow: 0 8px 25px rgba(0, 100, 0, 0.1);
+            --font-family: 'Noto Sans SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            margin: 0; padding: 0; font-family: var(--font-family);
+            background-color: var(--bg-light); color: var(--text-dark); line-height: 1.75; scroll-behavior: smooth;
+            font-size: 16px;
+        }
+        .container { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+        h1, h2, h3, h4 { font-weight: 700; color: var(--primary-dark); margin-top: 0; }
+        h2 { font-size: 2.4em; }
+        h3 { font-size: 1.6em; }
+
+        .section-padding { padding: 70px 0; }
+
+        .section-title {
+            text-align: center; font-size: 2.6em; margin-bottom: 25px; position: relative; padding-bottom: 20px;
+        }
+        .section-title::after {
+            content: ''; display: block; width: 80px; height: 5px; background-color: var(--primary-color);
+            margin: 15px auto 0; border-radius: 3px;
+        }
+        .section-subtitle {
+            text-align: center; font-size: 1.15em; color: var(--text-light); margin-bottom: 50px;
+            max-width: 750px; margin-left: auto; margin-right: auto;
+        }
+
+        .navbar {
+            background-color: rgba(255,255,255,0.98); backdrop-filter: blur(10px); padding: 18px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--primary-color);
+        }
+        .navbar .logo { font-size: 2.1em; font-weight: 700; color: var(--primary-color); text-decoration: none; letter-spacing: -0.5px; }
+        .navbar .logo span { color: var(--secondary-color); }
+        .navbar ul { list-style: none; margin: 0; padding: 0; display: flex; }
+        .navbar ul li { margin-left: 38px; }
+        .navbar ul li a {
+            text-decoration: none; color: #37474F; font-weight: 500; font-size: 1em;
+            transition: color 0.25s ease, transform 0.2s ease; display: inline-block; padding: 8px 0;
+            position: relative;
+        }
+        .navbar ul li a::after {
+            content: ''; position: absolute; width: 0; height: 3px; display: block;
+            margin-top: 4px; right: 50%; transform: translateX(50%); background: var(--primary-color);
+            transition: width 0.3s ease; border-radius: 1.5px;
+        }
+        .navbar ul li a:hover::after, .navbar ul li a.active::after { width: 100%; }
+        .navbar ul li a:hover, .navbar ul li a.active { color: var(--primary-color); }
+
+        .hero {
+            background: linear-gradient(140deg, rgba(76, 175, 80, 0.92) 0%, rgba(46, 125, 50, 0.96) 100%), url('assets/img/general/hero_background.jpg') no-repeat center center/cover;
+            color: white; text-align: center; padding: 100px 20px 130px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative; overflow: hidden; min-height: calc(90vh - 80px);
+            box-sizing: border-box;
+        }
+        .hero::before {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 100px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V62.08C150.12,110.61,305.43,120,458.36,109.31C571.45,101.11,622.89,59.6,700.42,40.46C785.58,19.78,861.83,5.29,935.83,2.94C1027.18,.05,1115.6,2.31,1200,10.68V0Z' fill='%23f8f9fa'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 100% 100%; background-repeat: no-repeat;
+        }
+        .hero h1 {
+            font-size: clamp(2.6em, 5.5vw, 4em); margin-bottom: 25px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.3); /* 增强阴影 */
+            animation: fadeInDown 1s 0.2s ease-out backwards;
+            color: #fff;
+        }
+        .hero p { font-size: clamp(1.1em, 2.8vw, 1.5em); margin-bottom: 50px; max-width: 820px; opacity: 0.95; animation: fadeInUp 1s 0.5s ease-out backwards; line-height: 1.8; }
+        .hero .cta-button {
+            background: linear-gradient(45deg, var(--secondary-color), #fdd835);
+            color: #424242; padding: 18px 45px; text-decoration: none; font-size: 1.3em;
+            border-radius: 50px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 700; box-shadow: 0 8px 25px rgba(255, 152, 0, 0.3);
+            animation: pulse 2.2s 1s infinite ease-in-out; display: inline-block; border: none;
+        }
+        .hero .cta-button:hover { transform: scale(1.08) translateY(-4px); box-shadow: 0 12px 30px rgba(255, 152, 0, 0.45); animation-play-state: paused; }
+
+        .features-text-only { padding: 70px 20px; background-color: #ffffff; }
+        .feature-text-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .feature-text-card {
+            background: #fdfdfd; border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary-color);
+            padding: 25px 30px; border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-color 0.3s ease;
+        }
+        .feature-text-card:hover {
+            transform: translateY(-8px) scale(1.02); /* 增加轻微放大 */
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.12);
+            border-left-color: var(--secondary-color);
+        }
+        .feature-text-card:hover h3 .icon {
+            transform: rotate(-15deg) scale(1.1); /* 图标旋转放大 */
+        }
+        .feature-text-card h3 {
+            font-size: 1.5em; color: var(--primary-dark); margin-bottom: 15px;
+            display: flex; align-items: center;
+        }
+        .feature-text-card h3 .icon {
+            margin-right: 12px; font-size: 1.4em; color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+        .feature-text-card p {
+            font-size: 0.95em; color: var(--text-light); line-height: 1.7;
+        }
+
+
+        .highlight-box {
+            background-color: #fffde7; border-left: 6px solid var(--secondary-color);
+            padding: 25px 30px; margin: 50px auto; border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07); max-width: 900px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        .highlight-box h3 { color: #b76a00; font-size: 1.9em; margin-bottom: 15px; text-align: center; }
+        .highlight-box p { font-size: 1.15em; color: #6d4c41; text-align: center; line-height: 1.8; }
+        .interaction-highlight { background-color: #ffe082; padding: 3px 7px; border-radius: 4px; font-weight: 500; color: #795548; box-shadow: 0 1px 3px rgba(0,0,0,0.12); transition: all 0.2s ease-in-out; }
+        .interaction-highlight:hover { background-color: #ffd54f; transform: scale(1.03); }
+
+
+        /* --- 平台功能展示（截图/动图区域） --- */
+        .showcase-section { background-color: var(--bg-highlight); }
+        .showcase-grid {
+            display: grid; grid-template-columns: 1fr; gap: 50px;
+        }
+        @media (min-width: 900px) {
+            .showcase-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        }
+        .showcase-card {
+            background: #fff; border-radius: 16px; box-shadow: var(--card-shadow);
+            overflow: hidden; transition: transform 0.35s ease, box-shadow 0.35s ease;
+            display: flex; flex-direction: column;
+        }
+        .showcase-card:hover { transform: translateY(-10px); box-shadow: var(--card-hover-shadow); }
+
+        .showcase-card .media-container {
+            width: 100%; background-color: #f0f7f0; cursor: pointer; position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color); /* 图片和内容区的分隔线 */
+        }
+        .showcase-card .media-container img {
+            display: block; width: 100%; height: 100%;
+            object-fit: cover; /* 图片会被裁剪以完全覆盖容器 */
+            transition: transform 0.4s ease-in-out;
+        }
+        .showcase-card:hover .media-container img { transform: scale(1.05); }
+
+        /* 用户端截图模拟手机框 */
+        .showcase-card.user-app-showcase .media-container {
+            max-width: 300px; /* 限制最大宽度，使其更像手机 */
+            height: auto; /* 高度自适应内容 */
+            aspect-ratio: 9 / 19.5; /* 强制手机比例 */
+            margin: 0 auto; /* 居中 */
+            border: 8px solid #333; /* 模拟手机边框 */
+            border-bottom-width: 18px; /* 底部边框稍厚 */
+            border-radius: 30px; /* 手机圆角 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.2) inset, 0 2px 5px rgba(0,0,0,0.1); /* 内外阴影 */
+            position: relative;
+            background-color: #fff; /* 如果图片未填满，显示白色背景 */
+        }
+        .showcase-card.user-app-showcase .media-container::before { /* 模拟听筒 */
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background-color: #555;
+            border-radius: 2px;
+            z-index: 1; /* 确保在图片上 */
+        }
+         .showcase-card.user-app-showcase .media-container img {
+            object-fit: contain; /* 确保图片完整显示在模拟框内 */
+            border-radius: 22px; /* 图片也带一点圆角，配合外框 */
+        }
+
+        /* 管理端截图尺寸 */
+        .showcase-card.admin-panel-showcase .media-container {
+            height: auto; /* 高度自适应，由图片比例决定 */
+            aspect-ratio: 16 / 10;
+        }
+         .showcase-card.admin-panel-showcase .media-container img {
+            object-fit: cover; /* 管理端截图通常是宽屏，cover效果好 */
+        }
+
+
+        .showcase-card .media-container::after { /* 点击放大提示 */
+            content: '🔎 点击查看大图'; position: absolute; bottom: 8px; right: 8px;
+            background-color: rgba(0,0,0,0.7); color: white; padding: 4px 8px;
+            font-size: 0.75em; border-radius: 4px; opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none;
+            transform: translateY(5px);
+        }
+        .showcase-card.user-app-showcase .media-container::after { /* 手机框的提示位置调整 */
+            bottom: 20px; /* 避免被底部厚边框遮挡 */
+        }
+        .showcase-card .media-container:hover::after { opacity: 1; transform: translateY(0); }
+
+        .showcase-card .content-wrapper {
+            padding: 20px 25px 25px; background: #ffffff;
+            flex-grow: 1;
+        }
+        .showcase-card .content-wrapper h4 {
+            font-size: 1.4em; color: var(--primary-color); margin-bottom: 10px; display: flex; align-items: center;
+            transition: color 0.3s ease;
+        }
+        .showcase-card:hover .content-wrapper h4 {
+            color: var(--secondary-dark); /* 悬停时标题变色 */
+        }
+        .showcase-card .content-wrapper h4 .icon { margin-right: 8px; font-size: 1.1em; }
+        .showcase-card .content-wrapper p { font-size: 0.95em; color: var(--text-light); line-height: 1.7; margin-bottom: 0; }
+        .showcase-card .content-wrapper .tags { margin-top: 15px; }
+        .showcase-card .content-wrapper .tag {
+            display: inline-block; background-color: var(--bg-highlight); color: var(--primary-dark);
+            padding: 4px 10px; border-radius: 16px; font-size: 0.8em; font-weight: 500;
+            margin-right: 8px; margin-bottom: 8px; transition: background-color 0.2s, color 0.2s;
+        }
+        .showcase-card .content-wrapper .tag:hover {
+            background-color: var(--primary-color); color: white; transform: scale(1.05);
+        }
+
+        /* 视频演示区域 */
+        .video-presentation { padding: 80px 20px; background-color: var(--bg-highlight); }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 40px; }
+        .video-card { text-align: center; background: #fff; border-radius:16px; padding: 30px; box-shadow: var(--card-shadow);}
+        .video-card:hover { transform: translateY(-10px); box-shadow: var(--card-hover-shadow); }
+        .video-card h3 { font-size: 1.8em; margin-bottom: 25px; color: var(--primary-color); }
+        .video-placeholder {
+            width: 100%; aspect-ratio: 16 / 9;
+            margin: 0 auto; border-radius: 10px; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; color: white; font-size: 1.5em; cursor: pointer; overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-size: cover; background-position: center;
+        }
+        .video-placeholder#user-video-ph { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('assets/img/general/video_thumb_user.jpg'); }
+        .video-placeholder#admin-video-ph { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('assets/img/general/video_thumb_admin.jpg'); }
+        .video-placeholder:hover { transform: scale(1.02); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+        .video-placeholder .play-button { font-size: 4.5em; opacity: 0.9; color: #fff; transition: transform 0.2s; text-shadow: 0 0 25px rgba(0,0,0,0.7); }
+        .video-placeholder:hover .play-button { transform: scale(1.15); }
+        .video-placeholder p { margin-top: 12px; font-size: 0.95em; opacity: 0.9; background-color: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 5px; }
+        .video-player-wrapper { display: none; margin-top: 20px; border-radius: 10px; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);}
+        .video-player-wrapper video { display: block; width: 100%; border-radius: 10px; }
+
+        .tech-stack { padding: 70px 20px; background-color: #ffffff; text-align: center; }
+        .tech-logos { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px 40px; align-items: center; }
+        .tech-logo { display: flex; flex-direction: column; align-items: center; width: 100px; opacity: 0.9; transition: opacity 0.3s ease, transform 0.3s ease; position: relative;}
+        .tech-logo:hover { opacity: 1; transform: translateY(-5px) scale(1.03); }
+        .tech-logo:hover::before { /* 悬停时背景高光 */
+            content:''; position: absolute; top: 50%; left: 50%; width: 70px; height: 70px;
+            background: radial-gradient(circle, rgba(76,175,80,0.15) 0%, rgba(76,175,80,0) 70%);
+            border-radius: 50%; transform: translate(-50%, -60%) scale(1.5); z-index: -1; opacity: 0;
+            animation: techLogoHover 0.4s ease-out forwards;
+        }
+        @keyframes techLogoHover { from { opacity:0; transform: translate(-50%, -60%) scale(0.5); } to { opacity:1; transform: translate(-50%, -60%) scale(1.5); }}
+        .tech-logo img { height: 50px; width: auto; max-width:100%; margin-bottom: 10px; object-fit: contain; }
+        .tech-logo span { font-size: 0.9em; color: var(--text-light); }
+
+        .contact-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; padding: 70px 20px; text-align: center;
+        }
+        .contact-section h2 { font-size: 2.4em; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .contact-section p { font-size: 1.2em; margin-bottom: 35px; opacity: 0.95; }
+
+          .interactive-zone {
+        padding: 70px 20px;
+        background: linear-gradient(135deg, #66BB6A, #43A047);
+        color: white;
+        text-align: center;
+    }
+    .interactive-zone h2 {
+        font-size: 2.4em;
+        margin-bottom: 25px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+    .interactive-zone p {
+        font-size: 1.2em;
+        margin-bottom: 40px;
+        opacity: 0.95;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .interaction-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 25px; /* 按钮间距 */
+        flex-wrap: wrap; /* 手机上换行 */
+    }
+    .interaction-button {
+        background-color: var(--secondary-color);
+        color: var(--text-dark);
+        padding: 15px 30px;
+        text-decoration: none;
+        font-size: 1.1em;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        display: inline-flex; /* 让图标和文字在按钮内对齐 */
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .interaction-button:hover {
+        background-color: var(--secondary-dark);
+        color: white;
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    .interaction-button .icon { /* 用于按钮内的小图标 */
+        margin-right: 8px;
+        font-size: 1.3em; /* 调整图标大小 */
+    }
+    .qr-code-placeholder {
+        margin-top: 30px;
+        display: inline-block; /* 使其可以居中 */
+        padding: 15px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .qr-code-placeholder img {
+        width: 150px;
+        height: 150px;
+        display: block;
+    }
+    .qr-code-placeholder p {
+        font-size: 0.9em;
+        color: var(--text-light);
+        margin-top: 8px;
+        margin-bottom: 0;
+    }
+
+        .footer { background-color: #263238; color: #cfd8dc; text-align: center; padding: 50px 20px; font-size: 0.95em; }
+        .footer p { margin: 8px 0; }
+        .footer a { color: #80cbc4; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .back-to-top {
+            position: fixed; bottom: 30px; right: 30px;
+            background-color: var(--primary-color); color: white;
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.8em; text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0; visibility: hidden; transform: translateY(20px);
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+            z-index: 999;
+        }
+        .back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-2px) scale(1.05); }
+
+
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.92);
+            justify-content: center; align-items: center; backdrop-filter: blur(6px);
+        }
+        .modal-content {
+            margin: auto; display: block; max-width: 90vw; max-height: 90vh;
+            border-radius: 10px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            animation: zoomIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            object-fit: contain;
+        }
+        .modal-caption { margin-top: 20px; color: #f5f5f5; text-align: center; font-size: 1.15em; font-weight: 500;}
+        .close-modal {
+            position: absolute; top: 20px; right: 30px; color: #f1f1f1;
+            font-size: 45px; font-weight: bold; transition: 0.3s; cursor: pointer;
+        }
+        .close-modal:hover, .close-modal:focus { color: #ccc; transform: rotate(90deg) scale(1.1); }
+
+        /* 动画 (同前) */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-25px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 152, 0, 0.3); } 50% { transform: scale(1.06); box-shadow: 0 12px 35px rgba(255, 152, 0, 0.45); } 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 152, 0, 0.3); } }
+        @keyframes zoomIn { from { transform: scale(0.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            h2 { font-size: 2em; } h3 { font-size: 1.4em;}
+            .hero h1 { font-size: clamp(2.2em, 7vw, 3em); } .hero p { font-size: clamp(1em, 4vw, 1.2em); }
+            .section-title { font-size: 2.1em; }
+            .section-subtitle { font-size: 1em; margin-bottom: 40px; }
+            .navbar ul { display: none; }
+            .contact-form { flex-direction: column; gap: 12px; }
+            .contact-form input[type="email"], .contact-form button { border-radius: 25px; }
+            .modal-content { max-width: 95%; max-height: 95%; }
+            .showcase-grid, .video-grid, .feature-text-grid { grid-template-columns: 1fr; gap: 30px; }
+            .video-card { padding: 20px; }
+            .tech-logos { gap: 20px 25px;}
+            .tech-logo { width: 90px; }
+            .tech-logo img { height: 45px;}
+            /* 手机端用户截图框进一步调整，确保比例和视觉效果 */
+            .showcase-card.user-app-showcase .media-container {
+                max-width: 280px; /* 在手机上再次限制最大宽度 */
+                height: auto; /* 允许高度自适应内容，aspect-ratio会生效 */
+                aspect-ratio: 9 / 19.5; /* 维持比例 */
+                border-width: 6px; /* 手机框边框变细 */
+                border-bottom-width: 14px;
+                border-radius: 24px;
+            }
+            .showcase-card.user-app-showcase .media-container::before { /* 手机听筒调整 */
+                 width: 35px; height: 3px; top: 8px;
+            }
+            .showcase-card.user-app-showcase .media-container img {
+                border-radius: 18px; /* 内部图片圆角相应调整 */
+            }
+
+            .showcase-card.admin-panel-showcase .media-container {
+                 height: auto; /* 管理端也自适应 */
+                 aspect-ratio: 16 / 10; /* 维持比例 */
+            }
+            .back-to-top { width: 40px; height: 40px; font-size: 1.5em; bottom: 20px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#hero" class="logo">蔬鲜<span>递</span></a>
+        <ul>
+            <li><a href="#hero" class="active">首页概览</a></li>
+            <li><a href="#features-text-only">核心亮点</a></li>
+            <li><a href="#showcase">功能展示</a></li>
+            <li><a href="#video-presentation">操作演示</a></li>
+            <li><a href="#tech-stack">技术架构</a></li>
+            <li><a href="#contact">联系我</a></li>
+        </ul>
+    </nav>
+
+    <section id="hero" class="hero">
+        <h1>蔬鲜递 - 智慧生鲜购物平台</h1>
+        <p>一款集智能推荐、便捷购物与高效管理于一体的现代化生鲜电商解决方案，致力于提升用户体验与商家运营效率。</p>
+        <button class="cta-button" onclick="document.getElementById('features-text-only').scrollIntoView({behavior:'smooth'});">探索核心功能</button>
+    </section>
+
+    <section id="features-text-only" class="features-text-only section-padding">
+        <div class="container">
+            <h2 class="section-title">平台核心亮点</h2>
+            <p class="section-subtitle">我致力于打造一个不仅仅是购买生鲜的地方，更是一个懂你所需、为你省心、助你健康的生活伙伴。通过技术创新，我希望重新定义您的生鲜购物体验。</p>
+            <div class="feature-text-grid">
+                <div class="feature-text-card">
+                    <h3><span class="icon">🎯</span> 极致用户体验 (用户端)</h3>
+                    <p>清爽的界面设计与流畅的购物流程。从智能商品搜索、个性化时令推荐到便捷的购物车管理和安全的订单结算，全面优化用户旅程。特别集成AI营养助手“小蔬”，提供定制化健康饮食咨询与商品智能匹配服务。</p>
+                </div>
+                <div class="feature-text-card">
+                    <h3><span class="icon">🛠️</span> 全方位运营管理 (管理端)</h3>
+                    <p>为商家打造强大且易用的后台管理系统。涵盖员工权限细分、商品（菜品/套餐）的精细化上下架与编辑、灵活的动态分类配置、订单全周期追踪与处理，以及直观的数据看板。支持商品秒杀等多种营销活动设置。</p>
+                </div>
+                <div class="feature-text-card">
+                    <h3><span class="icon">💡</span> 创新技术融合与实践</h3>
+                    <p>采用成熟的前后端分离架构，后端基于Spring Boot保证系统稳定与高效，前端Vue 3框架带来现代化的交互体验。整合讯飞星火大语言模型赋能AI助手，利用Redis实现高效缓存与会话管理。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="highlight-box">
+        <h3><span style="color: var(--secondary-color); font-size:1.3em; vertical-align: middle;">🌟</span> 项目创新点与特色</h3>
+        <p>“蔬鲜递”的核心创新在于将<span class="interaction-highlight">AI大模型应用于生鲜导购</span>，提供超越传统搜索的个性化服务。结合<span class="interaction-highlight">精准的秒杀营销</span>、<span class="interaction-highlight">会员体系</span>及<span class="interaction-highlight">清晰流畅的多端用户界面（用户端App与管理后台）</span>，我致力于探索生鲜新零售的差异化竞争路径，提升用户粘性与平台价值。</p>
+    </div>
+
+    <section id="showcase" class="showcase-section section-padding">
+        <div class="container">
+            <h2 class="section-title">平台功能展示</h2>
+            <p class="section-subtitle">通过以下图文结合的方式，详细了解“蔬鲜递”用户App及管理后台的各项核心功能模块。</p>
+
+            <div id="user-app-showcase">
+                <h3 style="text-align:center; font-size:2em; color:var(--primary-color); margin-bottom:40px; margin-top:0;">
+                    <span style="font-size: 1.2em;">📱</span> 用户端 App - 主要功能界面
+                </h3>
+                <div class="showcase-grid">
+                    <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/home.png', '用户端 - 首页')">
+                            <img src="assets/img/screenshots/user_app/home.png" alt="用户端首页">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🏠</span> 首页浏览与发现</h4>
+                            <p>清晰展示时令推荐、秒杀活动快捷入口、商品分类导航以及热门商品瀑布流，引导用户快速开始他们的购物之旅。</p>
+                            <div class="tags"><span class="tag">个性化推荐</span><span class="tag">活动聚合</span></div>
+                        </div>
+                    </div>
+                
+                     <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/season.png', '用户端 - 时令推荐')">
+                            <img src="assets/img/screenshots/user_app/season.png" alt="用户端时令推荐">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">☀️</span> 时令佳品</h4>
+                            <p>根据当前季节智能推荐最新鲜、最当季的蔬菜水果，让用户轻松品尝大自然的馈赠。</p>
+                            <div class="tags"><span class="tag">季节限定</span><span class="tag">新鲜保障</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/cart.png', '用户端 - 购物车')">
+                            <img src="assets/img/screenshots/user_app/cart.png" alt="用户端购物车">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🛒</span> 智能购物车</h4>
+                            <p>用户可方便地增减商品数量，修改商品属性（如口味），购物车会实时计算商品总价和优惠信息。</p>
+                            <div class="tags"><span class="tag">实时计算</span><span class="tag">便捷管理</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/order_list.png', '用户端 - 确认订单')">
+                            <img src="assets/img/screenshots/user_app/order_list.png" alt="用户端确认订单">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🧾</span> 订单确认</h4>
+                            <p>清晰展示订单中的所有商品、选择的收货地址、预计送达时间以及详细的费用明细，包括商品金额、会员折扣、打包费和配送费。</p>
+                            <div class="tags"><span class="tag">信息核对</span><span class="tag">费用透明</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/pay.png', '用户端 - 支付页面')">
+                            <img src="assets/img/screenshots/user_app/pay.png" alt="用户端支付模拟">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">💳</span> 模拟支付</h4>
+                            <p>在确认订单后，系统会引导用户进入模拟支付流程，展示支付金额并提供支付确认按钮。</p>
+                            <div class="tags"><span class="tag">流程完整</span><span class="tag">体验闭环</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/ai.png', '用户端 - AI助手')">
+                            <img src="assets/img/screenshots/user_app/ai.png" alt="用户端AI助手">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">💡</span> AI智能助手“小蔬”</h4>
+                            <p>与AI“小蔬”进行对话，获取个性化的饮食健康建议、菜品营养价值分析，AI还会根据对话内容智能推荐平台内的相关商品。</p>
+                            <div class="tags"><span class="tag">智能交互</span><span class="tag">健康咨询</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/flash.png', '用户端 - 秒杀活动')">
+                            <img src="assets/img/screenshots/user_app/flash.png" alt="用户端秒杀活动">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">⚡</span> 限时秒杀</h4>
+                            <p>展示正在进行的秒杀商品，包含醒目的秒杀价格、原价对比、活动倒计时、库存进度条和每人限购提示。</p>
+                             <div class="tags"><span class="tag">优惠抢购</span><span class="tag">营造氛围</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/address.png', '用户端 - 地址管理')">
+                            <img src="assets/img/screenshots/user_app/address.png" alt="用户端地址管理">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">📍</span> 地址管理</h4>
+                            <p>用户可以方便地添加、编辑、删除和设置默认收货地址，确保订单准确送达。</p>
+                             <div class="tags"><span class="tag">多地址</span><span class="tag">便捷设置</span></div>
+                        </div>
+                    </div>
+                     <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/user_login.png', '用户端 - 登录注册')">
+                            <img src="assets/img/screenshots/user_app/user_login.png" alt="用户端登录注册">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🔑</span> 登录与注册</h4>
+                            <p>提供邮箱验证码登录和密码登录两种方式，以及完整的新用户注册流程，保障账户安全。</p>
+                             <div class="tags"><span class="tag">安全便捷</span><span class="tag">多方式</span></div>
+                        </div>
+                    </div>
+                     <div class="showcase-card user-app-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/user_app/vip.png', '用户端 - 会员中心')">
+                            <img src="assets/img/screenshots/user_app/vip.png" alt="用户端会员中心">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🌟</span> 会员中心</h4>
+                            <p>展示会员权益，用户可在此开通或续费年度会员，享受购物折扣等待遇。清晰显示会员到期时间。</p>
+                             <div class="tags"><span class="tag">尊享权益</span><span class="tag">状态管理</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin-panel-showcase" style="margin-top: 70px;">
+                 <h3 style="text-align:center; font-size:2em; color:var(--primary-color); margin-bottom:40px;">
+                    <span style="font-size: 1.2em;">⚙️</span> 管理后台 - 核心模块界面
+                </h3>
+                <div class="showcase-grid">
+                    <div class="showcase-card admin-panel-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/index.png', '管理端 - 数据看板/首页')">
+                            <img src="assets/img/screenshots/admin_panel/index.png" alt="管理端数据看板">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">📊</span> 数据看板 (首页)</h4>
+                            <p>管理员登录后首先看到的仪表盘，汇总展示关键运营数据，如今日订单量、待处理订单、员工总数、在售商品数，并通过图表展示近期订单趋势和商品分类占比。</p>
+                            <div class="tags"><span class="tag">数据可视化</span><span class="tag">运营概览</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card admin-panel-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/goods.png', '管理端 - 商品管理')">
+                            <img src="assets/img/screenshots/admin_panel/goods.png" alt="管理端商品管理">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">📦</span> 商品管理</h4>
+                            <p>对平台销售的菜品和套餐进行全面的增、删、改、查操作。包括编辑商品名称、价格、库存、图片、描述、分类、单位、产地、保质期等信息，并控制其上下架状态及秒杀配置。</p>
+                            <div class="tags"><span class="tag">精细化管理</span><span class="tag">营销配置</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card admin-panel-showcase">
+                         <!-- 假设你有一张后台设置秒杀的截图，命名为 flash.png (原为 product_flash_sale_setup.png) -->
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/flash.png', '管理端 - 商品秒杀配置')">
+                            <img src="assets/img/screenshots/admin_panel/flash.png" alt="管理端秒杀活动配置">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">⏱️</span> 秒杀活动配置</h4>
+                            <p>管理员可为选定的商品设置秒杀活动，包括自定义秒杀价格、限定的秒杀库存数量、活动的开始与结束时间，以及每个用户的限购数量。</p>
+                            <div class="tags"><span class="tag">营销工具</span><span class="tag">灵活设置</span></div>
+                        </div>
+                    </div>
+                    <div class="showcase-card admin-panel-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/order.png', '管理端 - 订单管理')">
+                            <img src="assets/img/screenshots/admin_panel/order.png" alt="管理端订单管理">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">📋</span> 订单管理与追踪</h4>
+                            <p>分页展示所有用户订单，支持按订单号或下单时间范围进行筛选查询。管理员可以查看每个订单的详细信息，并对订单进行“派送”、“完成”等状态的更新操作。</p>
+                            <div class="tags"><span class="tag">流程管理</span><span class="tag">状态更新</span></div>
+                        </div>
+                    </div>
+                     <div class="showcase-card admin-panel-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/category.png', '管理端 - 分类管理')">
+                            <img src="assets/img/screenshots/admin_panel/category.png" alt="管理端分类管理">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🗂️</span> 分类管理</h4>
+                            <p>支持对商品分类和套餐分类进行新增、修改、删除和排序操作，方便商家组织商品结构。分类的维护直接影响前端用户App的商品组织和展示。</p>
+                            <div class="tags"><span class="tag">结构化</span><span class="tag">动态调整</span></div>
+                        </div>
+                    </div>
+                     <div class="showcase-card admin-panel-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/employee.png', '管理端 - 员工管理')">
+                            <img src="assets/img/screenshots/admin_panel/employee.png" alt="管理端员工管理">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">👥</span> 员工账户管理</h4>
+                            <p>管理后台操作人员的账户信息，包括新增员工、编辑员工资料（如姓名、手机号）、设置员工账号的启用/禁用状态。可以为不同员工分配不同角色。</p>
+                            <div class="tags"><span class="tag">权限分配</span><span class="tag">账户安全</span></div>
+                        </div>
+                    </div>
+                     <div class="showcase-card admin-panel-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/setmeal.png', '管理端 - 套餐组合管理')">
+                            <img src="assets/img/screenshots/admin_panel/setmeal.png" alt="管理端套餐组合管理">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🍱</span> 套餐组合管理</h4>
+                            <p>创建和编辑套餐，可以将多个单独的菜品组合成一个套餐进行销售。可以设置套餐价格、图片、描述，并管理套餐内包含的菜品及其份数。</p>
+                            <div class="tags"><span class="tag">组合销售</span><span class="tag">优惠配置</span></div>
+                        </div>
+                    </div>
+                     <div class="showcase-card admin-panel-showcase">
+                        <div class="media-container" onclick="showModal('assets/img/screenshots/admin_panel/employee_login.png', '管理端 - 登录界面')">
+                            <img src="assets/img/screenshots/admin_panel/employee_login.png" alt="管理端登录界面">
+                        </div>
+                        <div class="content-wrapper">
+                            <h4><span class="icon">🚪</span> 管理后台登录</h4>
+                            <p>后台系统的安全入口，员工需使用分配的账号和密码进行登录验证。</p>
+                             <div class="tags"><span class="tag">安全访问</span><span class="tag">身份验证</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="video-presentation" class="video-presentation section-padding">
+        <div class="container">
+            <h2 class="section-title">平台操作演示</h2>
+             <p class="section-subtitle">通过视频更直观地了解用户端如何轻松购物，以及管理员如何高效管理平台。</p>
+            <div class="video-grid">
+                <div class="video-card">
+                    <h3><span style="font-size: 1.2em;">📱</span> 用户端体验之旅</h3>
+                    <div class="video-placeholder" id="user-video-ph" onclick="playUserVideo()">
+                        <span class="play-button">▶</span>
+                        <p>点击播放用户端核心操作流程</p>
+                    </div>
+                    <div class="video-player-wrapper" id="user-video-player-container">
+                         <video id="user-project-video" width="100%" controls poster="assets/img/general/video_thumb_user.jpg">
+                            <source src="assets/img/general/user_demo_video.mp4" type="video/mp4">
+                            您的浏览器不支持 HTML5 Video 标签。
+                        </video>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <h3><span style="font-size: 1.2em;">⚙️</span> 管理后台高效运营</h3>
+                     <div class="video-placeholder" id="admin-video-ph" onclick="playAdminVideo()">
+                        <span class="play-button">▶</span>
+                        <p>点击播放管理后台核心操作流程</p>
+                    </div>
+                    <div class="video-player-wrapper" id="admin-video-player-container">
+                         <video id="admin-project-video" width="100%" controls poster="assets/img/general/video_thumb_admin.jpg">
+                            <source src="assets/img/general/admin_demo_video.mp4" type="video/mp4">
+                             您的浏览器不支持 HTML5 Video 标签。
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tech-stack" class="tech-stack section-padding">
+        <div class="container">
+            <h2 class="section-title">技术架构</h2>
+             <p class="section-subtitle">本项目采用业界主流且成熟的技术栈构建，旨在提供稳定、高效、可扩展的生鲜电商服务。</p>
+            <div class="tech-logos">
+                <div class="tech-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original-wordmark.svg" alt="Spring Boot">
+                    <span>Spring Boot</span>
+                </div>
+                <div class="tech-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original-wordmark.svg" alt="Vue.js">
+                    <span>Vue.js 3</span>
+                </div>
+                 <div class="tech-logo">
+                    <img src="./assets/img/logo/讯飞星火-copy.png" alt="讯飞星火AI" style=" padding:5px; border-radius: 5px; height: 45px;">
+                    <span>讯飞星火AI</span>
+                </div>
+                <div class="tech-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg" alt="MySQL">
+                    <span>MySQL</span>
+                </div>
+                <div class="tech-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original-wordmark.svg" alt="Redis">
+                    <span>Redis</span>
+                </div>
+                
+                <div class="tech-logo">
+                    <img src="./assets/img/logo/element-plus.png" alt="Element Plus">
+                    <span>Element Plus</span>
+                </div>
+                 <div class="tech-logo">
+                    <img src="https://img.yzcdn.cn/vant/logo.png" alt="Vant UI" style="max-height: 45px;">
+                    <span>Vant UI</span>
+                </div>
+                 <div class="tech-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original-wordmark.svg" alt="Maven">
+                    <span>Apache Maven</span>
+                </div>
+                 <div class="tech-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original-wordmark.svg" alt="Git">
+                    <span>Git</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  <section id="contact" class="interactive-zone section-padding"> 
+    <div class="container">
+        <h2><span style="color: var(--secondary-color); font-size: 1.1em;">🌟</span> 未来已来，邀您共创！</h2>
+        <p>“蔬鲜递”的旅程才刚刚开始！它承载着我对智慧生鲜与健康生活的热情与探索。您的每一票，都是对创新的鼓励；您的每一次交流，都可能点亮“蔬鲜递”更美好的未来！</p>
+        <div class="interaction-buttons">
+            <button class="interaction-button" onclick="handleLikeProject()">
+                <span class="icon">💖</span> 为项目点赞
+            </button>
+           
+        </div>
+      
+    </div>
+</section>
+    <footer class="footer">
+         <div class="container">
+            <p>© 2025 蔬鲜递 (FreshVeggieExpress) - 毕业设计作品</p>
+            <p>开发者：陈锶桂 | 指导老师：江导</p>
+            <p>感谢您的宝贵时间！</p>
+        </div>
+    </footer>
+    <a href="#hero" class="back-to-top" id="backToTopBtn">↑</a>
+
+
+    <div id="myModal" class="modal" onclick="closeModalOnClick(event)">
+        <span class="close-modal" onclick="closeModalAndVideo()">×</span>
+        <img class="modal-content" id="modalImage" alt="放大后的截图或动图">
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offset = document.querySelector('.navbar').offsetHeight;
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = targetElement.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset - 20;
+                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                    document.querySelectorAll('.navbar ul li a').forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        function playUserVideo() {
+            const videoPlaceholder = document.getElementById('user-video-ph');
+            const videoPlayerContainer = document.getElementById('user-video-player-container');
+            const videoElement = document.getElementById('user-project-video');
+            if (videoPlaceholder && videoPlayerContainer && videoElement) {
+                videoPlaceholder.style.display = 'none';
+                videoPlayerContainer.style.display = 'block';
+                videoElement.play().catch(error => console.error("用户端视频自动播放失败:", error));
+            }
+        }
+        function playAdminVideo() {
+            const videoPlaceholder = document.getElementById('admin-video-ph');
+            const videoPlayerContainer = document.getElementById('admin-video-player-container');
+            const videoElement = document.getElementById('admin-project-video');
+            if (videoPlaceholder && videoPlayerContainer && videoElement) {
+                videoPlaceholder.style.display = 'none';
+                videoPlayerContainer.style.display = 'block';
+                videoElement.play().catch(error => console.error("管理端视频自动播放失败:", error));
+            }
+        }
+
+        const modal = document.getElementById('myModal');
+        const modalImg = document.getElementById('modalImage');
+        const captionText = document.getElementById('modalCaption');
+
+        function showModal(imgPath, caption) {
+            modal.style.display = "flex";
+            modalImg.src = imgPath;
+            captionText.innerHTML = caption;
+        }
+        
+        function closeModalAndVideo() {
+            modal.style.display = "none";
+            const userVideo = document.getElementById('user-project-video');
+            const adminVideo = document.getElementById('admin-project-video');
+            if (userVideo) userVideo.pause();
+            if (adminVideo) adminVideo.pause();
+        }
+
+        function closeModalOnClick(event) {
+            if (event.target === modal || event.target.classList.contains('close-modal')) {
+                closeModalAndVideo();
+            }
+        }
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && modal.style.display === "flex") {
+                closeModalAndVideo();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.feature-text-card, .showcase-card, .tech-logo, .highlight-box, .video-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = `fadeInUp 0.8s ease-out 0.15s forwards`;
+                        entry.target.style.opacity = '0';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.05 });
+            animatedElements.forEach(el => { observer.observe(el); });
+
+            // 返回顶部按钮
+            const backToTopButton = document.getElementById("backToTopBtn");
+            window.onscroll = function() {
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    backToTopButton.classList.add("visible");
+                } else {
+                    backToTopButton.classList.remove("visible");
+                }
+            };
+        });
+            let likeCount = 0; // 简单模拟点赞数
+    function handleLikeProject() {
+        likeCount++;
+        const likeButton = event.target.closest('.interaction-button');
+        if (likeButton) {
+            likeButton.innerHTML = `<span class="icon">💖</span> 已点赞 !`;
+            likeButton.style.backgroundColor = '#a5d6a7'; // 浅绿色反馈
+            likeButton.style.color = 'var(--primary-dark)';
+            likeButton.disabled = true; // 防止重复点击
+        }
+        alert('感谢您的点赞！您的支持是我们最大的动力！');
+    }
+
+  
+    
+    // 更新DOMContentLoaded中的元素选择器，如果使用了新的类名
+    document.addEventListener('DOMContentLoaded', () => {
+        const animatedElements = document.querySelectorAll('.feature-text-card, .showcase-card, .tech-logo, .highlight-box, .video-card, .interaction-button'); // 添加新按钮
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = `fadeInUp 0.8s ease-out 0.15s forwards`;
+                    entry.target.style.opacity = '0';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.05 });
+        animatedElements.forEach(el => { observer.observe(el); });
+
+        // 返回顶部按钮 (如果之前没有，可以加上)
+        const backToTopButton = document.getElementById("backToTopBtn");
+        if (backToTopButton) { // 检查按钮是否存在
+            window.onscroll = function() {
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    backToTopButton.classList.add("visible");
+                } else {
+                    backToTopButton.classList.remove("visible");
+                }
+            };
+        }
+    });
+    </script>
+</body>
+</html>
